@@ -121,8 +121,14 @@ def create_book(request):
             # manually save the model to the database
             book_model.save()
             messages.success(
-                request, f"New book {submitted_form.cleaned_data['title']} has been created")
+                request,
+                f"New book {submitted_form.cleaned_data['title']} has been"
+                " created")
             return redirect(reverse(index))
+        else:
+            return render(request, "books/create_book.template.html", {
+                'form': submitted_form
+            })
     else:
         # if user did not submit the data, just display the form
         create_book_form = BookForm()

@@ -9,6 +9,8 @@ import stripe
 from books.models import Book
 from .models import Purchase
 
+import json
+
 # Create your views here.
 
 
@@ -25,21 +27,24 @@ def checkout(request):
     all_book_ids = []
 
     # for each item in the shopping cart...
-    for key, item in cart.items():
+    for key, cart_item in cart.items():
 
-        book_model = get_object_or_404(Book, pk=item["id"])
+        book_model = get_object_or_404(Book, pk=cart_item["id"])
         # create a line item
         item = {
             "name": book_model.title,
             # multiply the actual cost of the book to represent
             # the cost in cents and must be in integer
             "amount": int(book_model.cost * 100),
-            "quantity": item["qty"],
+            "quantity": cart_item["qty"],
             "currency": "usd"
         }
 
         line_items.append(item)
-        all_book_ids.append(str(book_model.id))
+        all_book_ids.append({
+            'book_id': book_model.id,
+            'qty': cart_item["qty"]
+        })
 
     # get the domain name
     current_site = Site.objects.get_current()
@@ -55,7 +60,7 @@ def checkout(request):
         success_url=domain + reverse('checkout_success_route'),
         cancel_url=domain + reverse('checkout_cancelled_route'),
         metadata={
-            "all_book_ids": ",".join(all_book_ids)
+            "books": json.dumps(all_book_ids)
         }
     )
 
@@ -106,12 +111,14 @@ def payment_completed(request):
 def handle_payment(session):
     user = get_object_or_404(User, pk=session["client_reference_id"])
 
-    all_book_ids = session['metadata']['all_book_ids'].split(',')
-    for book_id in all_book_ids:
-        book_model = get_object_or_404(Book, pk=book_id)
+    all_book_ids = json.loads(session['metadata']['books'])
+    for book in all_book_ids:
+        book_model = get_object_or_404(Book, pk=book["book_id"])
 
         # create a Purchase model manually
         purchase = Purchase()
         purchase.book = book_model
         purchase.user = user
+        purchase.price = book_model.cost
+        purchase.qty = int(book["qty"])
         purchase.save()
