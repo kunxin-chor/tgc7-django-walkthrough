@@ -8,6 +8,7 @@ class BookForm(forms.ModelForm):
     class Meta:
         model = Book
         exclude = ('owner',)
+
     cover = CloudinaryJsFileField()
 
     def clean_ISBN(self):
@@ -18,6 +19,14 @@ class BookForm(forms.ModelForm):
         books = Book.objects.filter(ISBN=data)
         if books.count() > 0:
             raise ValidationError("The ISBN is not unique!")
+
+        return data
+
+    def clean_page_count(self):
+        data = self.cleaned_data['page_count']
+
+        if data <= 0:
+            raise ValidationError("Page count must be larger than 0")
 
         return data
 

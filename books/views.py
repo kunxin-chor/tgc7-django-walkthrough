@@ -166,6 +166,10 @@ def create_author(request):
         if author_form.is_valid():
             author_form.save()
             return redirect(reverse(show_authors))
+        else:
+            return render(request, 'books/create_author.template.html', {
+                'form': author_form
+            })
     else:
         author_form = AuthorForm()
         return render(request, 'books/create_author.template.html', {
