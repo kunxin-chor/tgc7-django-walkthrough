@@ -182,7 +182,21 @@ LOGIN_REDIRECT_URL = '/success'
 
 # set it such that whenevr django sends out an email, it will be
 # shown in the terminal instead
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+TEST_EMAIL = os.environ.get('TEST_EMAIL')
+
+if TEST_EMAIL == "1":
+    # use the console to see the email content
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    # Set email to be sent via SMTP
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_USE_TLS = True
+    EMAIL_PORT = 587
+    EMAIL_HOST = "smtp.gmail.com"
+    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASS")
+    EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+    DEFAULT_FROM_EMAIL = os.environ.get("EMAIL_HOST_USER")
+
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
@@ -197,3 +211,7 @@ CLOUDINARY = {
 STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
 STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
 STRIPE_ENDPOINT_SECRET = os.environ.get('SIGNING_SECRET')
+
+FIXTURE_DIRS = (
+   os.path.join(BASE_DIR, "fixtures"),
+)
