@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 
 from books.models import Book
 from .models import Purchase
+import decimal
 
 # Create your tests here.
 
@@ -22,4 +23,4 @@ class CheckoutTestCase(TestCase):
         purchase.qty = 2
         purchase.save()
 
-        self.assertAlmostEqual(purchase.total, 2 * book.cost)
+        self.assertAlmostEqual(purchase.total, 2 * book.cost * decimal.Decimal(1.15))

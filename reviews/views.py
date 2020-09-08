@@ -27,12 +27,13 @@ def index(request):
         # to search by book title
         if 'book_title' in request.GET and request.GET['book_title']:
             query = query & Q(book__title__icontains=request.GET['book_title'])
-        
+
         # search by author
         if 'author' in request.GET and request.GET['author']:
             query = query & Q(author=request.GET['author'])
 
     all_reviews = Review.objects.filter(query)
+
     return render(request, 'reviews/show_reviews.template.html', {
         'all_reviews': all_reviews,
         'form': form

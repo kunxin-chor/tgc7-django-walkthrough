@@ -2,6 +2,7 @@ from django.db import models
 
 from books.models import Book
 from django.contrib.auth.models import User
+import decimal
 
 # Create your models here.
 
@@ -20,5 +21,5 @@ class Purchase(models.Model):
 
     # override the default save
     def save(self, *args, **kwargs):
-        self.total = self.price * self.qty
+        self.total = self.price * self.qty * decimal.Decimal(1.15)
         super().save(*args, **kwargs)
