@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'reviews',
     'home',
     'cart',
-    'checkout'
+    'checkout',
+    'userprofile'
 ]
 
 MIDDLEWARE = [
@@ -174,6 +175,8 @@ ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = True
 
 # minimal length of the user name
 ACCOUNT_USERNAME_MIN_LENGTH = 4
+
+ACCOUNT_FORMS = {'signup': 'userprofile.forms.CustomizedSignupForm'}
 
 # the url to go to display the login page
 LOGIN_URL = '/accounts/login/'
